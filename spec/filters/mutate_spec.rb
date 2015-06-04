@@ -434,4 +434,20 @@ describe LogStash::Filters::Mutate do
     end
   end
 
+  describe "Removing element from an array" do
+    config '
+      filter {
+        mutate {
+          rename => [ "[array][1]" , "dst" ]
+        }
+      }'
+
+    list = Java::JavaUtil::ArrayList.new
+    list.add id:1
+    list.add id:2
+    sample("array" => list ) do
+      insist { subject["dst"] } == {id:2}
+      insist { subject["array"] } == [ {id:1} ]
+    end
+  end
 end
